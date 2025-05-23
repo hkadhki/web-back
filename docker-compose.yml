@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: "postgres"
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+
+
+
+  web-shop:
+    build:
+      context: ./web-shop
+      dockerfile: Dockerfile
+    container_name: web-shop
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/postgres'
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: 'org.hibernate.dialect.PostgreSQLDialect'
+    ports:
+      - "8080:8080"
+
+  web-admin:
+    build:
+      context: ./web-admin
+      dockerfile: Dockerfile
+    container_name: web-admin
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://postgres:5432/postgres'
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: 'org.hibernate.dialect.PostgreSQLDialect'
+    ports:
+      - "8081:8081"
+
